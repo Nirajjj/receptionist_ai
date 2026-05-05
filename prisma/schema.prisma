@@ -10,29 +10,134 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  
 }
 
 model User {
-  id    String  @id @default(uuid())
-  email String  @unique
-  password String
-  createdAt DateTime @default(now())
+  id       String  @id @default(uuid())
+  name     String?
+  email    String? @unique
+  phone    String  @unique
+  password String?
+  role     Role    @default(PATIENT)
+
+  appointments        Appointment[] @relation("PatientAppointments")
+  managedAppointments Appointment[] @relation("AdminAppointments")
+
+  clinicId String? @map("clinic_id")
+  clinic   Clinic? @relation(fields: [clinicId], references: [id])
+
+  notifications Notification[]
+  BlockedSlot   BlockedSlot[]
+  availability  Availability[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+}
+
+enum Role {
+  PATIENT
+  ADMIN
+}
+
+model Clinic {
+  id      String  @id @default(cuid())
+  name    String
+  address String?
+  phone   String?
+
+  users        User[]
+  availability Availability[]
+  appointments Appointment[]
+  callLogs     CallLog[]
+  BlockedSlot  BlockedSlot[]
+
+  createdAt DateTime @default(now()) @map("created_at")
 }
 
 model Appointment {
   id String @id @default(uuid())
-  name String
-  phone String
-  date DateTime
-  status String
-  createdAt DateTime @default(now())
+
+  patientId String @map("patient_id")
+  patient   User   @relation("PatientAppointments", fields: [patientId], references: [id])
+
+  handledById String? @map("handled_by_id")
+  handledBy   User?   @relation("AdminAppointments", fields: [handledById], references: [id])
+
+  clinicId String @map("clinic_id")
+  clinic   Clinic @relation(fields: [clinicId], references: [id])
+
+  date         DateTime
+  durationMins Int               @default(30) @map("duration_mins")
+  status       AppointmentStatus @default(SCHEDULED)
+  notes        String?
+
+  createdAt DateTime @default(now()) @map("created_at")
+}
+
+enum AppointmentStatus {
+  SCHEDULED
+  COMPLETED
+  CANCELLED
+  NO_SHOW
 }
 
 model CallLog {
-  id         String   @id @default(uuid())
+  id         String @id @default(uuid())
   phone      String
   transcript String
   intent     String
-  createdAt  DateTime @default(now())
+
+  clinicId String @map("clinic_id")
+  clinic   Clinic @relation(fields: [clinicId], references: [id])
+
+  createdAt DateTime @default(now()) @map("created_at")
+}
+
+model Availability {
+  id String @id @default(cuid())
+
+  dayOfWeek    Int @map("day_of_week") // 0 = Sunday, 6 = Saturday
+  startMinutes Int @map("start_minutes") // e.g. 540 = 9:00 AM
+  endMinutes   Int @map("end_minutes") // e.g. 1020 = 5:00 PM
+  slotDuration Int @default(30) @map("slot_duration") // in minutes
+
+  doctorId String @map("doctor_id")
+  doctor   User   @relation(fields: [doctorId], references: [id])
+
+  clinicId String @map("clinic_id")
+  clinic   Clinic @relation(fields: [clinicId], references: [id])
+
+  isActive Boolean @default(true) @map("is_active")
+
+  createdAt DateTime @default(now()) @map("created_at")
+}
+
+model BlockedSlot {
+  id String @id @default(uuid())
+
+  doctorId String @map("doctor_id")
+  doctor   User   @relation(fields: [doctorId], references: [id])
+
+  clinicId String @map("clinic_id")
+  clinic   Clinic @relation(fields: [clinicId], references: [id])
+
+  start DateTime
+  end   DateTime
+
+  reason String?
+
+  createdAt DateTime @default(now()) @map("created_at")
+}
+
+model Notification {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  type    String
+  message String
+
+  isRead Boolean @default(false) @map("is_read")
+
+  createdAt DateTime @default(now()) @map("created_at")
 }

@@ -1,4 +1,4 @@
-import { handleError } from '../middleware/errorHandler';
+import { handleError } from './errorHandler';
 
 // lib/utils/asyncHandler.ts
 export const asyncHandler = (fn: Function) => {

@@ -385,8 +385,12 @@ type FieldRefInputType<Model, FieldType> = Model extends never ? never : FieldRe
 
 export const ModelName = {
   User: 'User',
+  Clinic: 'Clinic',
   Appointment: 'Appointment',
-  CallLog: 'CallLog'
+  CallLog: 'CallLog',
+  Availability: 'Availability',
+  BlockedSlot: 'BlockedSlot',
+  Notification: 'Notification'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -402,7 +406,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "appointment" | "callLog"
+    modelProps: "user" | "clinic" | "appointment" | "callLog" | "availability" | "blockedSlot" | "notification"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -477,6 +481,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.UserCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.UserCountAggregateOutputType> | number
+        }
+      }
+    }
+    Clinic: {
+      payload: Prisma.$ClinicPayload<ExtArgs>
+      fields: Prisma.ClinicFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ClinicFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ClinicPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ClinicFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ClinicPayload>
+        }
+        findFirst: {
+          args: Prisma.ClinicFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ClinicPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ClinicFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ClinicPayload>
+        }
+        findMany: {
+          args: Prisma.ClinicFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ClinicPayload>[]
+        }
+        create: {
+          args: Prisma.ClinicCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ClinicPayload>
+        }
+        createMany: {
+          args: Prisma.ClinicCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ClinicCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ClinicPayload>[]
+        }
+        delete: {
+          args: Prisma.ClinicDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ClinicPayload>
+        }
+        update: {
+          args: Prisma.ClinicUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ClinicPayload>
+        }
+        deleteMany: {
+          args: Prisma.ClinicDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ClinicUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ClinicUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ClinicPayload>[]
+        }
+        upsert: {
+          args: Prisma.ClinicUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ClinicPayload>
+        }
+        aggregate: {
+          args: Prisma.ClinicAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateClinic>
+        }
+        groupBy: {
+          args: Prisma.ClinicGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ClinicGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ClinicCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ClinicCountAggregateOutputType> | number
         }
       }
     }
@@ -628,6 +706,228 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    Availability: {
+      payload: Prisma.$AvailabilityPayload<ExtArgs>
+      fields: Prisma.AvailabilityFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.AvailabilityFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AvailabilityPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.AvailabilityFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AvailabilityPayload>
+        }
+        findFirst: {
+          args: Prisma.AvailabilityFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AvailabilityPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.AvailabilityFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AvailabilityPayload>
+        }
+        findMany: {
+          args: Prisma.AvailabilityFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AvailabilityPayload>[]
+        }
+        create: {
+          args: Prisma.AvailabilityCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AvailabilityPayload>
+        }
+        createMany: {
+          args: Prisma.AvailabilityCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.AvailabilityCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AvailabilityPayload>[]
+        }
+        delete: {
+          args: Prisma.AvailabilityDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AvailabilityPayload>
+        }
+        update: {
+          args: Prisma.AvailabilityUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AvailabilityPayload>
+        }
+        deleteMany: {
+          args: Prisma.AvailabilityDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.AvailabilityUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.AvailabilityUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AvailabilityPayload>[]
+        }
+        upsert: {
+          args: Prisma.AvailabilityUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AvailabilityPayload>
+        }
+        aggregate: {
+          args: Prisma.AvailabilityAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateAvailability>
+        }
+        groupBy: {
+          args: Prisma.AvailabilityGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AvailabilityGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.AvailabilityCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AvailabilityCountAggregateOutputType> | number
+        }
+      }
+    }
+    BlockedSlot: {
+      payload: Prisma.$BlockedSlotPayload<ExtArgs>
+      fields: Prisma.BlockedSlotFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.BlockedSlotFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BlockedSlotPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.BlockedSlotFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BlockedSlotPayload>
+        }
+        findFirst: {
+          args: Prisma.BlockedSlotFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BlockedSlotPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.BlockedSlotFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BlockedSlotPayload>
+        }
+        findMany: {
+          args: Prisma.BlockedSlotFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BlockedSlotPayload>[]
+        }
+        create: {
+          args: Prisma.BlockedSlotCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BlockedSlotPayload>
+        }
+        createMany: {
+          args: Prisma.BlockedSlotCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.BlockedSlotCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BlockedSlotPayload>[]
+        }
+        delete: {
+          args: Prisma.BlockedSlotDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BlockedSlotPayload>
+        }
+        update: {
+          args: Prisma.BlockedSlotUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BlockedSlotPayload>
+        }
+        deleteMany: {
+          args: Prisma.BlockedSlotDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.BlockedSlotUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.BlockedSlotUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BlockedSlotPayload>[]
+        }
+        upsert: {
+          args: Prisma.BlockedSlotUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BlockedSlotPayload>
+        }
+        aggregate: {
+          args: Prisma.BlockedSlotAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateBlockedSlot>
+        }
+        groupBy: {
+          args: Prisma.BlockedSlotGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.BlockedSlotGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.BlockedSlotCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.BlockedSlotCountAggregateOutputType> | number
+        }
+      }
+    }
+    Notification: {
+      payload: Prisma.$NotificationPayload<ExtArgs>
+      fields: Prisma.NotificationFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.NotificationFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NotificationPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.NotificationFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NotificationPayload>
+        }
+        findFirst: {
+          args: Prisma.NotificationFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NotificationPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.NotificationFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NotificationPayload>
+        }
+        findMany: {
+          args: Prisma.NotificationFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NotificationPayload>[]
+        }
+        create: {
+          args: Prisma.NotificationCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NotificationPayload>
+        }
+        createMany: {
+          args: Prisma.NotificationCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.NotificationCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NotificationPayload>[]
+        }
+        delete: {
+          args: Prisma.NotificationDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NotificationPayload>
+        }
+        update: {
+          args: Prisma.NotificationUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NotificationPayload>
+        }
+        deleteMany: {
+          args: Prisma.NotificationDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.NotificationUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.NotificationUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NotificationPayload>[]
+        }
+        upsert: {
+          args: Prisma.NotificationUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NotificationPayload>
+        }
+        aggregate: {
+          args: Prisma.NotificationAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateNotification>
+        }
+        groupBy: {
+          args: Prisma.NotificationGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.NotificationGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.NotificationCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.NotificationCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -669,20 +969,39 @@ export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof
 
 export const UserScalarFieldEnum = {
   id: 'id',
+  name: 'name',
   email: 'email',
+  phone: 'phone',
   password: 'password',
-  createdAt: 'createdAt'
+  role: 'role',
+  clinicId: 'clinicId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
 
 
-export const AppointmentScalarFieldEnum = {
+export const ClinicScalarFieldEnum = {
   id: 'id',
   name: 'name',
+  address: 'address',
   phone: 'phone',
+  createdAt: 'createdAt'
+} as const
+
+export type ClinicScalarFieldEnum = (typeof ClinicScalarFieldEnum)[keyof typeof ClinicScalarFieldEnum]
+
+
+export const AppointmentScalarFieldEnum = {
+  id: 'id',
+  patientId: 'patientId',
+  handledById: 'handledById',
+  clinicId: 'clinicId',
   date: 'date',
+  durationMins: 'durationMins',
   status: 'status',
+  notes: 'notes',
   createdAt: 'createdAt'
 } as const
 
@@ -694,10 +1013,51 @@ export const CallLogScalarFieldEnum = {
   phone: 'phone',
   transcript: 'transcript',
   intent: 'intent',
+  clinicId: 'clinicId',
   createdAt: 'createdAt'
 } as const
 
 export type CallLogScalarFieldEnum = (typeof CallLogScalarFieldEnum)[keyof typeof CallLogScalarFieldEnum]
+
+
+export const AvailabilityScalarFieldEnum = {
+  id: 'id',
+  dayOfWeek: 'dayOfWeek',
+  startMinutes: 'startMinutes',
+  endMinutes: 'endMinutes',
+  slotDuration: 'slotDuration',
+  doctorId: 'doctorId',
+  clinicId: 'clinicId',
+  isActive: 'isActive',
+  createdAt: 'createdAt'
+} as const
+
+export type AvailabilityScalarFieldEnum = (typeof AvailabilityScalarFieldEnum)[keyof typeof AvailabilityScalarFieldEnum]
+
+
+export const BlockedSlotScalarFieldEnum = {
+  id: 'id',
+  doctorId: 'doctorId',
+  clinicId: 'clinicId',
+  start: 'start',
+  end: 'end',
+  reason: 'reason',
+  createdAt: 'createdAt'
+} as const
+
+export type BlockedSlotScalarFieldEnum = (typeof BlockedSlotScalarFieldEnum)[keyof typeof BlockedSlotScalarFieldEnum]
+
+
+export const NotificationScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  type: 'type',
+  message: 'message',
+  isRead: 'isRead',
+  createdAt: 'createdAt'
+} as const
+
+export type NotificationScalarFieldEnum = (typeof NotificationScalarFieldEnum)[keyof typeof NotificationScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -714,6 +1074,14 @@ export const QueryMode = {
 } as const
 
 export type QueryMode = (typeof QueryMode)[keyof typeof QueryMode]
+
+
+export const NullsOrder = {
+  first: 'first',
+  last: 'last'
+} as const
+
+export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
 
 
 
@@ -733,6 +1101,20 @@ export type StringFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 
  * Reference to a field of type 'String[]'
  */
 export type ListStringFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'String[]'>
+    
+
+
+/**
+ * Reference to a field of type 'Role'
+ */
+export type EnumRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Role'>
+    
+
+
+/**
+ * Reference to a field of type 'Role[]'
+ */
+export type ListEnumRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Role[]'>
     
 
 
@@ -761,6 +1143,41 @@ export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'In
  * Reference to a field of type 'Int[]'
  */
 export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
+    
+
+
+/**
+ * Reference to a field of type 'AppointmentStatus'
+ */
+export type EnumAppointmentStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AppointmentStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'AppointmentStatus[]'
+ */
+export type ListEnumAppointmentStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AppointmentStatus[]'>
+    
+
+
+/**
+ * Reference to a field of type 'Boolean'
+ */
+export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
+    
+
+
+/**
+ * Reference to a field of type 'Float'
+ */
+export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
+    
+
+
+/**
+ * Reference to a field of type 'Float[]'
+ */
+export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
     
 
 /**
@@ -874,8 +1291,12 @@ export type PrismaClientOptions = ({
 }
 export type GlobalOmitConfig = {
   user?: Prisma.UserOmit
+  clinic?: Prisma.ClinicOmit
   appointment?: Prisma.AppointmentOmit
   callLog?: Prisma.CallLogOmit
+  availability?: Prisma.AvailabilityOmit
+  blockedSlot?: Prisma.BlockedSlotOmit
+  notification?: Prisma.NotificationOmit
 }
 
 /* Types for Logging */

@@ -52,8 +52,12 @@ export const AnyNull = runtime.AnyNull
 
 export const ModelName = {
   User: 'User',
+  Clinic: 'Clinic',
   Appointment: 'Appointment',
-  CallLog: 'CallLog'
+  CallLog: 'CallLog',
+  Availability: 'Availability',
+  BlockedSlot: 'BlockedSlot',
+  Notification: 'Notification'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -74,20 +78,39 @@ export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof
 
 export const UserScalarFieldEnum = {
   id: 'id',
+  name: 'name',
   email: 'email',
+  phone: 'phone',
   password: 'password',
-  createdAt: 'createdAt'
+  role: 'role',
+  clinicId: 'clinicId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
 
 
-export const AppointmentScalarFieldEnum = {
+export const ClinicScalarFieldEnum = {
   id: 'id',
   name: 'name',
+  address: 'address',
   phone: 'phone',
+  createdAt: 'createdAt'
+} as const
+
+export type ClinicScalarFieldEnum = (typeof ClinicScalarFieldEnum)[keyof typeof ClinicScalarFieldEnum]
+
+
+export const AppointmentScalarFieldEnum = {
+  id: 'id',
+  patientId: 'patientId',
+  handledById: 'handledById',
+  clinicId: 'clinicId',
   date: 'date',
+  durationMins: 'durationMins',
   status: 'status',
+  notes: 'notes',
   createdAt: 'createdAt'
 } as const
 
@@ -99,10 +122,51 @@ export const CallLogScalarFieldEnum = {
   phone: 'phone',
   transcript: 'transcript',
   intent: 'intent',
+  clinicId: 'clinicId',
   createdAt: 'createdAt'
 } as const
 
 export type CallLogScalarFieldEnum = (typeof CallLogScalarFieldEnum)[keyof typeof CallLogScalarFieldEnum]
+
+
+export const AvailabilityScalarFieldEnum = {
+  id: 'id',
+  dayOfWeek: 'dayOfWeek',
+  startMinutes: 'startMinutes',
+  endMinutes: 'endMinutes',
+  slotDuration: 'slotDuration',
+  doctorId: 'doctorId',
+  clinicId: 'clinicId',
+  isActive: 'isActive',
+  createdAt: 'createdAt'
+} as const
+
+export type AvailabilityScalarFieldEnum = (typeof AvailabilityScalarFieldEnum)[keyof typeof AvailabilityScalarFieldEnum]
+
+
+export const BlockedSlotScalarFieldEnum = {
+  id: 'id',
+  doctorId: 'doctorId',
+  clinicId: 'clinicId',
+  start: 'start',
+  end: 'end',
+  reason: 'reason',
+  createdAt: 'createdAt'
+} as const
+
+export type BlockedSlotScalarFieldEnum = (typeof BlockedSlotScalarFieldEnum)[keyof typeof BlockedSlotScalarFieldEnum]
+
+
+export const NotificationScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  type: 'type',
+  message: 'message',
+  isRead: 'isRead',
+  createdAt: 'createdAt'
+} as const
+
+export type NotificationScalarFieldEnum = (typeof NotificationScalarFieldEnum)[keyof typeof NotificationScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -119,4 +183,12 @@ export const QueryMode = {
 } as const
 
 export type QueryMode = (typeof QueryMode)[keyof typeof QueryMode]
+
+
+export const NullsOrder = {
+  first: 'first',
+  last: 'last'
+} as const
+
+export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
 

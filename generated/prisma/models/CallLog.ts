@@ -29,6 +29,7 @@ export type CallLogMinAggregateOutputType = {
   phone: string | null
   transcript: string | null
   intent: string | null
+  clinicId: string | null
   createdAt: Date | null
 }
 
@@ -37,6 +38,7 @@ export type CallLogMaxAggregateOutputType = {
   phone: string | null
   transcript: string | null
   intent: string | null
+  clinicId: string | null
   createdAt: Date | null
 }
 
@@ -45,6 +47,7 @@ export type CallLogCountAggregateOutputType = {
   phone: number
   transcript: number
   intent: number
+  clinicId: number
   createdAt: number
   _all: number
 }
@@ -55,6 +58,7 @@ export type CallLogMinAggregateInputType = {
   phone?: true
   transcript?: true
   intent?: true
+  clinicId?: true
   createdAt?: true
 }
 
@@ -63,6 +67,7 @@ export type CallLogMaxAggregateInputType = {
   phone?: true
   transcript?: true
   intent?: true
+  clinicId?: true
   createdAt?: true
 }
 
@@ -71,6 +76,7 @@ export type CallLogCountAggregateInputType = {
   phone?: true
   transcript?: true
   intent?: true
+  clinicId?: true
   createdAt?: true
   _all?: true
 }
@@ -152,6 +158,7 @@ export type CallLogGroupByOutputType = {
   phone: string
   transcript: string
   intent: string
+  clinicId: string
   createdAt: Date
   _count: CallLogCountAggregateOutputType | null
   _min: CallLogMinAggregateOutputType | null
@@ -181,7 +188,9 @@ export type CallLogWhereInput = {
   phone?: Prisma.StringFilter<"CallLog"> | string
   transcript?: Prisma.StringFilter<"CallLog"> | string
   intent?: Prisma.StringFilter<"CallLog"> | string
+  clinicId?: Prisma.StringFilter<"CallLog"> | string
   createdAt?: Prisma.DateTimeFilter<"CallLog"> | Date | string
+  clinic?: Prisma.XOR<Prisma.ClinicScalarRelationFilter, Prisma.ClinicWhereInput>
 }
 
 export type CallLogOrderByWithRelationInput = {
@@ -189,7 +198,9 @@ export type CallLogOrderByWithRelationInput = {
   phone?: Prisma.SortOrder
   transcript?: Prisma.SortOrder
   intent?: Prisma.SortOrder
+  clinicId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  clinic?: Prisma.ClinicOrderByWithRelationInput
 }
 
 export type CallLogWhereUniqueInput = Prisma.AtLeast<{
@@ -200,7 +211,9 @@ export type CallLogWhereUniqueInput = Prisma.AtLeast<{
   phone?: Prisma.StringFilter<"CallLog"> | string
   transcript?: Prisma.StringFilter<"CallLog"> | string
   intent?: Prisma.StringFilter<"CallLog"> | string
+  clinicId?: Prisma.StringFilter<"CallLog"> | string
   createdAt?: Prisma.DateTimeFilter<"CallLog"> | Date | string
+  clinic?: Prisma.XOR<Prisma.ClinicScalarRelationFilter, Prisma.ClinicWhereInput>
 }, "id">
 
 export type CallLogOrderByWithAggregationInput = {
@@ -208,6 +221,7 @@ export type CallLogOrderByWithAggregationInput = {
   phone?: Prisma.SortOrder
   transcript?: Prisma.SortOrder
   intent?: Prisma.SortOrder
+  clinicId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   _count?: Prisma.CallLogCountOrderByAggregateInput
   _max?: Prisma.CallLogMaxOrderByAggregateInput
@@ -222,6 +236,7 @@ export type CallLogScalarWhereWithAggregatesInput = {
   phone?: Prisma.StringWithAggregatesFilter<"CallLog"> | string
   transcript?: Prisma.StringWithAggregatesFilter<"CallLog"> | string
   intent?: Prisma.StringWithAggregatesFilter<"CallLog"> | string
+  clinicId?: Prisma.StringWithAggregatesFilter<"CallLog"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"CallLog"> | Date | string
 }
 
@@ -231,6 +246,7 @@ export type CallLogCreateInput = {
   transcript: string
   intent: string
   createdAt?: Date | string
+  clinic: Prisma.ClinicCreateNestedOneWithoutCallLogsInput
 }
 
 export type CallLogUncheckedCreateInput = {
@@ -238,6 +254,7 @@ export type CallLogUncheckedCreateInput = {
   phone: string
   transcript: string
   intent: string
+  clinicId: string
   createdAt?: Date | string
 }
 
@@ -247,6 +264,7 @@ export type CallLogUpdateInput = {
   transcript?: Prisma.StringFieldUpdateOperationsInput | string
   intent?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  clinic?: Prisma.ClinicUpdateOneRequiredWithoutCallLogsNestedInput
 }
 
 export type CallLogUncheckedUpdateInput = {
@@ -254,6 +272,7 @@ export type CallLogUncheckedUpdateInput = {
   phone?: Prisma.StringFieldUpdateOperationsInput | string
   transcript?: Prisma.StringFieldUpdateOperationsInput | string
   intent?: Prisma.StringFieldUpdateOperationsInput | string
+  clinicId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -262,6 +281,7 @@ export type CallLogCreateManyInput = {
   phone: string
   transcript: string
   intent: string
+  clinicId: string
   createdAt?: Date | string
 }
 
@@ -278,7 +298,18 @@ export type CallLogUncheckedUpdateManyInput = {
   phone?: Prisma.StringFieldUpdateOperationsInput | string
   transcript?: Prisma.StringFieldUpdateOperationsInput | string
   intent?: Prisma.StringFieldUpdateOperationsInput | string
+  clinicId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type CallLogListRelationFilter = {
+  every?: Prisma.CallLogWhereInput
+  some?: Prisma.CallLogWhereInput
+  none?: Prisma.CallLogWhereInput
+}
+
+export type CallLogOrderByRelationAggregateInput = {
+  _count?: Prisma.SortOrder
 }
 
 export type CallLogCountOrderByAggregateInput = {
@@ -286,6 +317,7 @@ export type CallLogCountOrderByAggregateInput = {
   phone?: Prisma.SortOrder
   transcript?: Prisma.SortOrder
   intent?: Prisma.SortOrder
+  clinicId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -294,6 +326,7 @@ export type CallLogMaxOrderByAggregateInput = {
   phone?: Prisma.SortOrder
   transcript?: Prisma.SortOrder
   intent?: Prisma.SortOrder
+  clinicId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -302,7 +335,136 @@ export type CallLogMinOrderByAggregateInput = {
   phone?: Prisma.SortOrder
   transcript?: Prisma.SortOrder
   intent?: Prisma.SortOrder
+  clinicId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+}
+
+export type CallLogCreateNestedManyWithoutClinicInput = {
+  create?: Prisma.XOR<Prisma.CallLogCreateWithoutClinicInput, Prisma.CallLogUncheckedCreateWithoutClinicInput> | Prisma.CallLogCreateWithoutClinicInput[] | Prisma.CallLogUncheckedCreateWithoutClinicInput[]
+  connectOrCreate?: Prisma.CallLogCreateOrConnectWithoutClinicInput | Prisma.CallLogCreateOrConnectWithoutClinicInput[]
+  createMany?: Prisma.CallLogCreateManyClinicInputEnvelope
+  connect?: Prisma.CallLogWhereUniqueInput | Prisma.CallLogWhereUniqueInput[]
+}
+
+export type CallLogUncheckedCreateNestedManyWithoutClinicInput = {
+  create?: Prisma.XOR<Prisma.CallLogCreateWithoutClinicInput, Prisma.CallLogUncheckedCreateWithoutClinicInput> | Prisma.CallLogCreateWithoutClinicInput[] | Prisma.CallLogUncheckedCreateWithoutClinicInput[]
+  connectOrCreate?: Prisma.CallLogCreateOrConnectWithoutClinicInput | Prisma.CallLogCreateOrConnectWithoutClinicInput[]
+  createMany?: Prisma.CallLogCreateManyClinicInputEnvelope
+  connect?: Prisma.CallLogWhereUniqueInput | Prisma.CallLogWhereUniqueInput[]
+}
+
+export type CallLogUpdateManyWithoutClinicNestedInput = {
+  create?: Prisma.XOR<Prisma.CallLogCreateWithoutClinicInput, Prisma.CallLogUncheckedCreateWithoutClinicInput> | Prisma.CallLogCreateWithoutClinicInput[] | Prisma.CallLogUncheckedCreateWithoutClinicInput[]
+  connectOrCreate?: Prisma.CallLogCreateOrConnectWithoutClinicInput | Prisma.CallLogCreateOrConnectWithoutClinicInput[]
+  upsert?: Prisma.CallLogUpsertWithWhereUniqueWithoutClinicInput | Prisma.CallLogUpsertWithWhereUniqueWithoutClinicInput[]
+  createMany?: Prisma.CallLogCreateManyClinicInputEnvelope
+  set?: Prisma.CallLogWhereUniqueInput | Prisma.CallLogWhereUniqueInput[]
+  disconnect?: Prisma.CallLogWhereUniqueInput | Prisma.CallLogWhereUniqueInput[]
+  delete?: Prisma.CallLogWhereUniqueInput | Prisma.CallLogWhereUniqueInput[]
+  connect?: Prisma.CallLogWhereUniqueInput | Prisma.CallLogWhereUniqueInput[]
+  update?: Prisma.CallLogUpdateWithWhereUniqueWithoutClinicInput | Prisma.CallLogUpdateWithWhereUniqueWithoutClinicInput[]
+  updateMany?: Prisma.CallLogUpdateManyWithWhereWithoutClinicInput | Prisma.CallLogUpdateManyWithWhereWithoutClinicInput[]
+  deleteMany?: Prisma.CallLogScalarWhereInput | Prisma.CallLogScalarWhereInput[]
+}
+
+export type CallLogUncheckedUpdateManyWithoutClinicNestedInput = {
+  create?: Prisma.XOR<Prisma.CallLogCreateWithoutClinicInput, Prisma.CallLogUncheckedCreateWithoutClinicInput> | Prisma.CallLogCreateWithoutClinicInput[] | Prisma.CallLogUncheckedCreateWithoutClinicInput[]
+  connectOrCreate?: Prisma.CallLogCreateOrConnectWithoutClinicInput | Prisma.CallLogCreateOrConnectWithoutClinicInput[]
+  upsert?: Prisma.CallLogUpsertWithWhereUniqueWithoutClinicInput | Prisma.CallLogUpsertWithWhereUniqueWithoutClinicInput[]
+  createMany?: Prisma.CallLogCreateManyClinicInputEnvelope
+  set?: Prisma.CallLogWhereUniqueInput | Prisma.CallLogWhereUniqueInput[]
+  disconnect?: Prisma.CallLogWhereUniqueInput | Prisma.CallLogWhereUniqueInput[]
+  delete?: Prisma.CallLogWhereUniqueInput | Prisma.CallLogWhereUniqueInput[]
+  connect?: Prisma.CallLogWhereUniqueInput | Prisma.CallLogWhereUniqueInput[]
+  update?: Prisma.CallLogUpdateWithWhereUniqueWithoutClinicInput | Prisma.CallLogUpdateWithWhereUniqueWithoutClinicInput[]
+  updateMany?: Prisma.CallLogUpdateManyWithWhereWithoutClinicInput | Prisma.CallLogUpdateManyWithWhereWithoutClinicInput[]
+  deleteMany?: Prisma.CallLogScalarWhereInput | Prisma.CallLogScalarWhereInput[]
+}
+
+export type CallLogCreateWithoutClinicInput = {
+  id?: string
+  phone: string
+  transcript: string
+  intent: string
+  createdAt?: Date | string
+}
+
+export type CallLogUncheckedCreateWithoutClinicInput = {
+  id?: string
+  phone: string
+  transcript: string
+  intent: string
+  createdAt?: Date | string
+}
+
+export type CallLogCreateOrConnectWithoutClinicInput = {
+  where: Prisma.CallLogWhereUniqueInput
+  create: Prisma.XOR<Prisma.CallLogCreateWithoutClinicInput, Prisma.CallLogUncheckedCreateWithoutClinicInput>
+}
+
+export type CallLogCreateManyClinicInputEnvelope = {
+  data: Prisma.CallLogCreateManyClinicInput | Prisma.CallLogCreateManyClinicInput[]
+  skipDuplicates?: boolean
+}
+
+export type CallLogUpsertWithWhereUniqueWithoutClinicInput = {
+  where: Prisma.CallLogWhereUniqueInput
+  update: Prisma.XOR<Prisma.CallLogUpdateWithoutClinicInput, Prisma.CallLogUncheckedUpdateWithoutClinicInput>
+  create: Prisma.XOR<Prisma.CallLogCreateWithoutClinicInput, Prisma.CallLogUncheckedCreateWithoutClinicInput>
+}
+
+export type CallLogUpdateWithWhereUniqueWithoutClinicInput = {
+  where: Prisma.CallLogWhereUniqueInput
+  data: Prisma.XOR<Prisma.CallLogUpdateWithoutClinicInput, Prisma.CallLogUncheckedUpdateWithoutClinicInput>
+}
+
+export type CallLogUpdateManyWithWhereWithoutClinicInput = {
+  where: Prisma.CallLogScalarWhereInput
+  data: Prisma.XOR<Prisma.CallLogUpdateManyMutationInput, Prisma.CallLogUncheckedUpdateManyWithoutClinicInput>
+}
+
+export type CallLogScalarWhereInput = {
+  AND?: Prisma.CallLogScalarWhereInput | Prisma.CallLogScalarWhereInput[]
+  OR?: Prisma.CallLogScalarWhereInput[]
+  NOT?: Prisma.CallLogScalarWhereInput | Prisma.CallLogScalarWhereInput[]
+  id?: Prisma.StringFilter<"CallLog"> | string
+  phone?: Prisma.StringFilter<"CallLog"> | string
+  transcript?: Prisma.StringFilter<"CallLog"> | string
+  intent?: Prisma.StringFilter<"CallLog"> | string
+  clinicId?: Prisma.StringFilter<"CallLog"> | string
+  createdAt?: Prisma.DateTimeFilter<"CallLog"> | Date | string
+}
+
+export type CallLogCreateManyClinicInput = {
+  id?: string
+  phone: string
+  transcript: string
+  intent: string
+  createdAt?: Date | string
+}
+
+export type CallLogUpdateWithoutClinicInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.StringFieldUpdateOperationsInput | string
+  transcript?: Prisma.StringFieldUpdateOperationsInput | string
+  intent?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type CallLogUncheckedUpdateWithoutClinicInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.StringFieldUpdateOperationsInput | string
+  transcript?: Prisma.StringFieldUpdateOperationsInput | string
+  intent?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type CallLogUncheckedUpdateManyWithoutClinicInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.StringFieldUpdateOperationsInput | string
+  transcript?: Prisma.StringFieldUpdateOperationsInput | string
+  intent?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 
@@ -312,7 +474,9 @@ export type CallLogSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   phone?: boolean
   transcript?: boolean
   intent?: boolean
+  clinicId?: boolean
   createdAt?: boolean
+  clinic?: boolean | Prisma.ClinicDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["callLog"]>
 
 export type CallLogSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -320,7 +484,9 @@ export type CallLogSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   phone?: boolean
   transcript?: boolean
   intent?: boolean
+  clinicId?: boolean
   createdAt?: boolean
+  clinic?: boolean | Prisma.ClinicDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["callLog"]>
 
 export type CallLogSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -328,7 +494,9 @@ export type CallLogSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   phone?: boolean
   transcript?: boolean
   intent?: boolean
+  clinicId?: boolean
   createdAt?: boolean
+  clinic?: boolean | Prisma.ClinicDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["callLog"]>
 
 export type CallLogSelectScalar = {
@@ -336,19 +504,32 @@ export type CallLogSelectScalar = {
   phone?: boolean
   transcript?: boolean
   intent?: boolean
+  clinicId?: boolean
   createdAt?: boolean
 }
 
-export type CallLogOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "phone" | "transcript" | "intent" | "createdAt", ExtArgs["result"]["callLog"]>
+export type CallLogOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "phone" | "transcript" | "intent" | "clinicId" | "createdAt", ExtArgs["result"]["callLog"]>
+export type CallLogInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  clinic?: boolean | Prisma.ClinicDefaultArgs<ExtArgs>
+}
+export type CallLogIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  clinic?: boolean | Prisma.ClinicDefaultArgs<ExtArgs>
+}
+export type CallLogIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  clinic?: boolean | Prisma.ClinicDefaultArgs<ExtArgs>
+}
 
 export type $CallLogPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "CallLog"
-  objects: {}
+  objects: {
+    clinic: Prisma.$ClinicPayload<ExtArgs>
+  }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     phone: string
     transcript: string
     intent: string
+    clinicId: string
     createdAt: Date
   }, ExtArgs["result"]["callLog"]>
   composites: {}
@@ -744,6 +925,7 @@ readonly fields: CallLogFieldRefs;
  */
 export interface Prisma__CallLogClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  clinic<T extends Prisma.ClinicDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ClinicDefaultArgs<ExtArgs>>): Prisma.Prisma__ClinicClient<runtime.Types.Result.GetResult<Prisma.$ClinicPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -777,6 +959,7 @@ export interface CallLogFieldRefs {
   readonly phone: Prisma.FieldRef<"CallLog", 'String'>
   readonly transcript: Prisma.FieldRef<"CallLog", 'String'>
   readonly intent: Prisma.FieldRef<"CallLog", 'String'>
+  readonly clinicId: Prisma.FieldRef<"CallLog", 'String'>
   readonly createdAt: Prisma.FieldRef<"CallLog", 'DateTime'>
 }
     
@@ -794,6 +977,10 @@ export type CallLogFindUniqueArgs<ExtArgs extends runtime.Types.Extensions.Inter
    * Omit specific fields from the CallLog
    */
   omit?: Prisma.CallLogOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CallLogInclude<ExtArgs> | null
   /**
    * Filter, which CallLog to fetch.
    */
@@ -813,6 +1000,10 @@ export type CallLogFindUniqueOrThrowArgs<ExtArgs extends runtime.Types.Extension
    */
   omit?: Prisma.CallLogOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CallLogInclude<ExtArgs> | null
+  /**
    * Filter, which CallLog to fetch.
    */
   where: Prisma.CallLogWhereUniqueInput
@@ -830,6 +1021,10 @@ export type CallLogFindFirstArgs<ExtArgs extends runtime.Types.Extensions.Intern
    * Omit specific fields from the CallLog
    */
   omit?: Prisma.CallLogOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CallLogInclude<ExtArgs> | null
   /**
    * Filter, which CallLog to fetch.
    */
@@ -879,6 +1074,10 @@ export type CallLogFindFirstOrThrowArgs<ExtArgs extends runtime.Types.Extensions
    */
   omit?: Prisma.CallLogOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CallLogInclude<ExtArgs> | null
+  /**
    * Filter, which CallLog to fetch.
    */
   where?: Prisma.CallLogWhereInput
@@ -926,6 +1125,10 @@ export type CallLogFindManyArgs<ExtArgs extends runtime.Types.Extensions.Interna
    * Omit specific fields from the CallLog
    */
   omit?: Prisma.CallLogOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CallLogInclude<ExtArgs> | null
   /**
    * Filter, which CallLogs to fetch.
    */
@@ -975,6 +1178,10 @@ export type CallLogCreateArgs<ExtArgs extends runtime.Types.Extensions.InternalA
    */
   omit?: Prisma.CallLogOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CallLogInclude<ExtArgs> | null
+  /**
    * The data needed to create a CallLog.
    */
   data: Prisma.XOR<Prisma.CallLogCreateInput, Prisma.CallLogUncheckedCreateInput>
@@ -1008,6 +1215,10 @@ export type CallLogCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensi
    */
   data: Prisma.CallLogCreateManyInput | Prisma.CallLogCreateManyInput[]
   skipDuplicates?: boolean
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CallLogIncludeCreateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1022,6 +1233,10 @@ export type CallLogUpdateArgs<ExtArgs extends runtime.Types.Extensions.InternalA
    * Omit specific fields from the CallLog
    */
   omit?: Prisma.CallLogOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CallLogInclude<ExtArgs> | null
   /**
    * The data needed to update a CallLog.
    */
@@ -1074,6 +1289,10 @@ export type CallLogUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensi
    * Limit how many CallLogs to update.
    */
   limit?: number
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CallLogIncludeUpdateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1088,6 +1307,10 @@ export type CallLogUpsertArgs<ExtArgs extends runtime.Types.Extensions.InternalA
    * Omit specific fields from the CallLog
    */
   omit?: Prisma.CallLogOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CallLogInclude<ExtArgs> | null
   /**
    * The filter to search for the CallLog to update in case it exists.
    */
@@ -1114,6 +1337,10 @@ export type CallLogDeleteArgs<ExtArgs extends runtime.Types.Extensions.InternalA
    * Omit specific fields from the CallLog
    */
   omit?: Prisma.CallLogOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CallLogInclude<ExtArgs> | null
   /**
    * Filter which CallLog to delete.
    */
@@ -1146,4 +1373,8 @@ export type CallLogDefaultArgs<ExtArgs extends runtime.Types.Extensions.Internal
    * Omit specific fields from the CallLog
    */
   omit?: Prisma.CallLogOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CallLogInclude<ExtArgs> | null
 }

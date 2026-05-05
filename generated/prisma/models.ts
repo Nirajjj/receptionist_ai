@@ -9,6 +9,10 @@
  * 🟢 You can import this file directly.
  */
 export type * from './models/User'
+export type * from './models/Clinic'
 export type * from './models/Appointment'
 export type * from './models/CallLog'
+export type * from './models/Availability'
+export type * from './models/BlockedSlot'
+export type * from './models/Notification'
 export type * from './commonInputTypes'

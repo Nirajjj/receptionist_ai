@@ -47,6 +47,11 @@ export { Prisma }
  */
 export type User = Prisma.UserModel
 /**
+ * Model Clinic
+ * 
+ */
+export type Clinic = Prisma.ClinicModel
+/**
  * Model Appointment
  * 
  */
@@ -56,3 +61,18 @@ export type Appointment = Prisma.AppointmentModel
  * 
  */
 export type CallLog = Prisma.CallLogModel
+/**
+ * Model Availability
+ * 
+ */
+export type Availability = Prisma.AvailabilityModel
+/**
+ * Model BlockedSlot
+ * 
+ */
+export type BlockedSlot = Prisma.BlockedSlotModel
+/**
+ * Model Notification
+ * 
+ */
+export type Notification = Prisma.NotificationModel
