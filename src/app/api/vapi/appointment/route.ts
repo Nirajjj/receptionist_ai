@@ -37,8 +37,8 @@ export const POST = async (req: NextRequest) => {
   }
   console.log(body);
   // 2. Extract the user's phone number from the call metadata
-  const phone = body.message.customer.number;
-  // const phone = '9999999999';
+  // const phone = body.message.customer.number;
+  const phone = '9999999999';
   // Example output: "+1234567890"
 
   // 3. Extract the arguments the AI gathered (date, time)
@@ -82,7 +82,7 @@ export const POST = async (req: NextRequest) => {
   const date = parsedDate;
 
   // 1. One function call does the checking AND gets alternatives if it fails
-  const slotData = await getAvailableTimeRanges(clinicId, date);
+  const slotData = await getAvailableTimeRanges(clinicId, date, doctorId);
 
   // 2. Handle Failures
   if (!slotData || !slotData.isValid) {
@@ -146,6 +146,7 @@ export const POST = async (req: NextRequest) => {
       date,
       clinicId,
       patientId: user.id,
+      doctorId: doctorId,
       handledById: doctorId,
       notes: reason,
     },
@@ -160,82 +161,3 @@ export const POST = async (req: NextRequest) => {
     ],
   });
 };
-
-export async function DELETE(req: NextRequest) {
-  const body = (await req.json()) as RootResponse;
-  const payload = body.message;
-
-  // 1. Validate this is a tool call
-  if (payload.type !== 'tool-calls') {
-    return Response.json(
-      {
-        success: false,
-        message: `Invalid request type`,
-      },
-      {
-        status: 400,
-        headers: {
-          'Access-Control-Allow-Origin': '*',
-        },
-      },
-    );
-  }
-  console.log(body);
-  // 2. Extract the user's phone number from the call metadata
-  // const phone = body.message.customer.number;
-  const phone = '9999999999';
-  // Example output: "+1234567890"
-
-  // 3. Extract the arguments the AI gathered (date, time)
-  const currentToolCall = payload.toolCalls[0];
-  const toolCallId = currentToolCall.id;
-  const toolCallArgs = currentToolCall.function.arguments;
-
-  // let parseToolCall = JSON.parse(toolCall);
-  const { name, clinicId, doctorId } = toolCallArgs;
-  // const {  } = body;
-  console.log(name, clinicId, doctorId);
-
-  const user = await prisma.user.findUnique({
-    where: { phone },
-    select: { id: true },
-  });
-
-  if (!user) {
-    return Response.json(
-      { success: false, message: 'No user found with this phone number.' },
-      { status: 404, headers: { 'Access-Control-Allow-Origin': '*' } },
-    );
-  }
-
-  // Find their nearest upcoming appointment
-  const appointment = await prisma.appointment.findFirst({
-    where: {
-      patientId: user.id,
-      clinicId,
-      handledById: doctorId,
-      status: 'SCHEDULED',
-    },
-    orderBy: { date: 'asc' },
-  });
-
-  if (!appointment) {
-    return Response.json(
-      { success: false, message: 'No appointment found.' },
-      { status: 404, headers: { 'Access-Control-Allow-Origin': '*' } },
-    );
-  }
-
-  await prisma.appointment.update({
-    where: { id: appointment.id },
-    data: { status: 'CANCELLED' },
-  });
-
-  return Response.json(
-    {
-      success: true,
-      message: `Your appointment on has been cancelled.`,
-    },
-    { status: 200, headers: { 'Access-Control-Allow-Origin': '*' } },
-  );
-}

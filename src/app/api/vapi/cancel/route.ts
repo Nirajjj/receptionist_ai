@@ -1,37 +1,83 @@
 import { NextRequest } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { z } from 'zod';
 
-export async function OPTIONS(req: Request) {
-  return Response.json(null, {
-    status: 200,
-    headers: {
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS, DELETE',
-      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-    },
-  });
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS, DELETE',
+  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+};
+
+const CancelArgsSchema = z.object({
+  name: z.string().min(1),
+  clinicId: z.string().min(1),
+  doctorId: z.string().min(1),
+});
+
+export async function OPTIONS() {
+  return Response.json(null, { status: 200, headers: corsHeaders });
 }
 
 export const POST = async (req: NextRequest) => {
-  const body = await req.json();
-  const payload = body.message;
-
-  // Verify it's a tool call
-  if (payload.type !== 'tool-calls') {
-    return Response.json({ success: false }, { status: 400 });
+  let body: any;
+  try {
+    body = await req.json();
+  } catch {
+    return Response.json(
+      { success: false, message: 'Invalid JSON' },
+      { status: 400, headers: corsHeaders },
+    );
   }
 
-  const { id: toolCallId, function: fn } = payload.toolCalls[0];
-  const args = typeof fn.arguments === 'string' ? JSON.parse(fn.arguments) : fn.arguments;
+  const payload = body.message;
 
-  const { name } = args;
-  // Get phone from Vapi metadata
-  const phone = body.message.customer.number || '9999999999';
+  if (payload.type !== 'tool-calls') {
+    return Response.json(
+      { success: false, message: 'Invalid request type' },
+      { status: 400, headers: corsHeaders },
+    );
+  }
+
+  const currentToolCall = payload.toolCalls[0];
+  const toolCallId = currentToolCall.id;
+
+  // parse args whether string or object
+  const rawArgs =
+    typeof currentToolCall.function.arguments === 'string'
+      ? JSON.parse(currentToolCall.function.arguments)
+      : currentToolCall.function.arguments;
+
+  // validate args
+  const argsValidation = CancelArgsSchema.safeParse(rawArgs);
+  if (!argsValidation.success) {
+    return Response.json({
+      results: [
+        {
+          toolCallId,
+          result: `Missing information: ${argsValidation.error.issues.map((i) => i.message).join(', ')}`,
+        },
+      ],
+    });
+  }
+
+  const { name, clinicId, doctorId } = argsValidation.data;
+  const phone = body.message.customer?.number;
+
+  if (!phone) {
+    return Response.json({
+      results: [
+        {
+          toolCallId,
+          result: 'I could not detect your phone number. Please try again.',
+        },
+      ],
+    });
+  }
 
   try {
-    // 1. Find the user
+    // 1. Find user
     const user = await prisma.user.findUnique({
-      where: { phone },
+      where: { phone, name },
       select: { id: true },
     });
 
@@ -40,42 +86,71 @@ export const POST = async (req: NextRequest) => {
         results: [
           {
             toolCallId,
-            result: `I couldn't find a patient record with the phone number ${phone}.`,
+            result: `I couldn't find a patient record with this phone number.`,
           },
         ],
       });
     }
 
-    // 2. Perform the 'Patch' (Status Update)
-    const updateResult = await prisma.appointment.updateMany({
+    // 2. Find specific upcoming appointment
+    // ✅ filter by clinicId and doctorId
+    // ✅ only future appointments
+    const appointment = await prisma.appointment.findFirst({
       where: {
         patientId: user.id,
-        status: 'SCHEDULED', // Only cancel future appointments
+        clinicId, // ✅ correct field
+        doctorId, // ✅ correct field (not handledById)
+        status: 'SCHEDULED',
+        date: { gte: new Date() }, // ✅ only future
       },
-      data: {
-        status: 'CANCELLED',
-      },
+      orderBy: { date: 'asc' },
     });
 
-    if (updateResult.count === 0) {
+    if (!appointment) {
       return Response.json({
         results: [
           {
             toolCallId,
-            result: `I found your account, ${name}, but you don't have any active appointments to cancel.`,
+            result: `I found your account, ${name}, but you don't have any upcoming appointments to cancel.`,
           },
         ],
       });
     }
 
-    return Response.json({
-      results: [{ toolCallId, result: `Confirmed. I have cancelled your appointment, ${name}.` }],
+    // 3. Cancel it
+    await prisma.appointment.update({
+      where: { id: appointment.id },
+      data: { status: 'CANCELLED' },
     });
-  } catch (error) {
-    console.error(error);
+
+    const formattedDate = appointment.date.toLocaleDateString('en-US', {
+      weekday: 'long',
+      month: 'long',
+      day: 'numeric',
+    });
+
+    const formattedTime = appointment.date.toLocaleTimeString('en-US', {
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true,
+    });
+
     return Response.json({
       results: [
-        { toolCallId, result: 'I ran into an error while trying to cancel the appointment.' },
+        {
+          toolCallId,
+          result: `Confirmed. I have cancelled your appointment on ${formattedDate} at ${formattedTime}, ${name}.`,
+        },
+      ],
+    });
+  } catch (error) {
+    console.error('Cancel error:', error);
+    return Response.json({
+      results: [
+        {
+          toolCallId,
+          result: 'I ran into an error while trying to cancel the appointment.',
+        },
       ],
     });
   }

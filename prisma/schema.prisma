@@ -20,7 +20,8 @@ model User {
   password String?
   role     Role    @default(PATIENT)
 
-  appointments        Appointment[] @relation("PatientAppointments")
+  patientAppointments Appointment[] @relation("PatientAppointments")
+  doctorAppointments  Appointment[] @relation("DoctorAppointments")
   handledAppointments Appointment[] @relation("AdminAppointments")
 
   clinicMemberships ClinicMembership[]
@@ -28,7 +29,7 @@ model User {
   notifications      Notification[]
   BlockedSlot        BlockedSlot[]
   availability       Availability[]
-  doctorAppointments Appointment[]  @relation("DoctorAppointments")
+  
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @default(now()) @updatedAt @map("updated_at")

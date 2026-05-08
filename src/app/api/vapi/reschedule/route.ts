@@ -2,39 +2,91 @@ import { NextRequest } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import * as chrono from 'chrono-node';
 import { getAvailableTimeRanges } from '@/lib/availability';
+import { z } from 'zod';
 
-// Make sure to import your function from wherever it lives, e.g.:
-// import { getAvailableTimeRanges } from '@/lib/availability';
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS, DELETE',
+  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+};
+
+const RescheduleArgsSchema = z.object({
+  rawNewTime: z.string().min(1, 'New time is required'),
+  clinicId: z.string().min(1, 'Clinic ID is required'),
+  doctorId: z.string().min(1, 'Doctor ID is required'),
+  name: z.string().min(1, 'Name is required'),
+});
+
+export async function OPTIONS() {
+  return Response.json(null, { status: 200, headers: corsHeaders });
+}
 
 export const POST = async (req: NextRequest) => {
-  const body = await req.json();
+  let body: any;
+  try {
+    body = await req.json();
+  } catch {
+    return Response.json(
+      { success: false, message: 'Invalid JSON' },
+      { status: 400, headers: corsHeaders },
+    );
+  }
+
   const payload = body.message;
 
-  // 1. Validate Tool Call
   if (payload.type !== 'tool-calls') {
-    return Response.json({ success: false, message: 'Invalid request' }, { status: 400 });
+    return Response.json(
+      { success: false, message: 'Invalid request type' },
+      { status: 400, headers: corsHeaders },
+    );
   }
 
   const currentToolCall = payload.toolCalls[0];
   const toolCallId = currentToolCall.id;
-  const args =
+
+  const rawArgs =
     typeof currentToolCall.function.arguments === 'string'
       ? JSON.parse(currentToolCall.function.arguments)
       : currentToolCall.function.arguments;
 
-  // Extract phone (from Vapi) and the new requested time (from AI args)
-  const phone = body.message.customer?.number || '9999999999';
-  const { rawNewTime } = args;
+  const argsValidation = RescheduleArgsSchema.safeParse(rawArgs);
+  if (!argsValidation.success) {
+    return Response.json({
+      results: [
+        {
+          toolCallId,
+          result: `Missing information: ${argsValidation.error.issues.map((i) => i.message).join(', ')}`,
+        },
+      ],
+    });
+  }
+
+  const { rawNewTime, clinicId, doctorId, name } = argsValidation.data;
+  const phone = body.message.customer?.number;
+
+  if (!phone) {
+    return Response.json({
+      results: [
+        {
+          toolCallId,
+          result: 'I could not detect your phone number. Please try again.',
+        },
+      ],
+    });
+  }
 
   try {
-    // 2. Find the User and their Next Upcoming Appointment
+    // ✅ correct relation name + filter by clinicId and doctorId
     const user = await prisma.user.findUnique({
-      where: { phone },
+      where: { phone, name },
       include: {
-        appointments: {
+        patientAppointments: {
+          // ✅ FIXED
           where: {
             status: 'SCHEDULED',
             date: { gte: new Date() },
+            clinicId, // ✅ filter by clinic
+            doctorId, // ✅ filter by doctor
           },
           orderBy: { date: 'asc' },
           take: 1,
@@ -42,21 +94,20 @@ export const POST = async (req: NextRequest) => {
       },
     });
 
-    if (!user || user.appointments.length === 0) {
+    if (!user || user.patientAppointments.length === 0) {
       return Response.json({
         results: [
           {
             toolCallId,
-            result: `I couldn't find an upcoming appointment for this phone number. Ask the user if they want to book a brand new appointment instead.`,
+            result: `I couldn't find an upcoming appointment for this phone number at this clinic. Ask the user if they want to book a brand new appointment instead.`,
           },
         ],
       });
     }
 
-    const currentAppointment = user.appointments[0];
-    const clinicId = currentAppointment.clinicId;
+    const currentAppointment = user.patientAppointments[0];
 
-    // 3. Parse the NEW requested time safely into UTC
+    // Parse new time
     const parsedDate = chrono.parseDate(
       rawNewTime,
       { instant: new Date(), timezone: 330 },
@@ -75,12 +126,9 @@ export const POST = async (req: NextRequest) => {
       });
     }
 
-    const newDate = parsedDate;
+    // Check availability for new time
+    const slotData = await getAvailableTimeRanges(clinicId, parsedDate, doctorId);
 
-    // 4. CENTRALIZED VALIDATION: Use your custom function
-    const slotData = await getAvailableTimeRanges(clinicId, newDate);
-
-    // 5. Handle Validation Failures
     if (!slotData || !slotData.isValid) {
       if (!slotData) {
         return Response.json({
@@ -94,16 +142,21 @@ export const POST = async (req: NextRequest) => {
       }
 
       const { availableDate, ranges, reason } = slotData;
-      const requestedTime = newDate.toLocaleTimeString('en-US', {
+
+      const requestedTime = parsedDate.toLocaleTimeString('en-US', {
         hour: 'numeric',
         minute: '2-digit',
         hour12: true,
       });
 
       const dayContext =
-        newDate.toDateString() === availableDate.toDateString()
+        parsedDate.toDateString() === availableDate.toDateString()
           ? 'later that day'
-          : `on ${availableDate.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}`;
+          : `on ${availableDate.toLocaleDateString('en-US', {
+              weekday: 'long',
+              month: 'short',
+              day: 'numeric',
+            })}`;
 
       const rangesText =
         ranges.length > 1
@@ -125,22 +178,34 @@ export const POST = async (req: NextRequest) => {
       });
     }
 
-    // 6. SUCCESS: Atomic Update of the Appointment Date
+    // ✅ Update the appointment
     await prisma.appointment.update({
       where: { id: currentAppointment.id },
-      data: { date: newDate },
+      data: { date: parsedDate },
+    });
+
+    const formattedDate = parsedDate.toLocaleDateString('en-US', {
+      weekday: 'long',
+      month: 'long',
+      day: 'numeric',
+    });
+
+    const formattedTime = parsedDate.toLocaleTimeString('en-US', {
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true,
     });
 
     return Response.json({
       results: [
         {
           toolCallId,
-          result: `Perfect. I have successfully moved the appointment for ${user.name} to ${newDate.toLocaleString()}. Confirm this with the user.`,
+          result: `Perfect. I have successfully moved the appointment for ${user.name} to ${formattedDate} at ${formattedTime}. Confirm this with the user.`,
         },
       ],
     });
   } catch (error) {
-    console.error('Reschedule Error:', error);
+    console.error('Reschedule error:', error);
     return Response.json({
       results: [
         {

@@ -1,38 +1,95 @@
 import { NextRequest } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { z } from 'zod';
+
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS, DELETE',
+  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+};
+
+// clinicId optional - show all upcoming if not specified
+const CheckStatusArgsSchema = z.object({
+  clinicId: z.string().optional(),
+  doctorId: z.string().optional(),
+  name: z.string().optional(),
+});
+
+export async function OPTIONS() {
+  return Response.json(null, { status: 200, headers: corsHeaders });
+}
 
 export const POST = async (req: NextRequest) => {
-  const body = await req.json();
+  let body: any;
+  try {
+    body = await req.json();
+  } catch {
+    return Response.json(
+      { success: false, message: 'Invalid JSON' },
+      { status: 400, headers: corsHeaders },
+    );
+  }
+
   const payload = body.message;
 
-  // 1. Validate Tool Call
   if (payload.type !== 'tool-calls') {
-    return Response.json({ success: false, message: 'Invalid request type' }, { status: 400 });
+    return Response.json(
+      { success: false, message: 'Invalid request type' },
+      { status: 400, headers: corsHeaders },
+    );
   }
 
   const currentToolCall = payload.toolCalls[0];
   const toolCallId = currentToolCall.id;
 
-  // 2. Extract Phone Number silently from Vapi metadata
-  const phone = body.message.customer?.number || '9999999999';
+  const rawArgs =
+    typeof currentToolCall.function.arguments === 'string'
+      ? JSON.parse(currentToolCall.function.arguments)
+      : currentToolCall.function.arguments;
+
+  const { clinicId, doctorId, name } = CheckStatusArgsSchema.parse(rawArgs);
+  const phone = body.message.customer?.number;
+
+  if (!phone) {
+    return Response.json({
+      results: [
+        {
+          toolCallId,
+          result: 'I could not detect your phone number. Please try again.',
+        },
+      ],
+    });
+  }
 
   try {
-    // 3. Find the user AND their most immediate future appointment
+    // ✅ use correct relation name: patientAppointments
     const user = await prisma.user.findUnique({
-      where: { phone },
+      where: { phone, name },
       include: {
-        appointments: {
+        patientAppointments: {
+          // ✅ FIXED relation name
           where: {
             status: 'SCHEDULED',
-            date: { gte: new Date() }, // Strictly future appointments
+            date: { gte: new Date() },
+            // filter by clinic/doctor if provided
+            ...(clinicId && { clinicId }),
+            ...(doctorId && { doctorId }),
           },
-          orderBy: { date: 'asc' }, // Get the closest one first
-          take: 1, // Only grab the next immediate one
+          orderBy: { date: 'asc' },
+          take: 1,
+          include: {
+            clinic: {
+              select: { name: true }, // show clinic name in response
+            },
+            doctor: {
+              select: { name: true }, // show doctor name in response
+            },
+          },
         },
       },
     });
 
-    // 4. Handle Case A: No User Exists
+    // No user found
     if (!user) {
       return Response.json({
         results: [
@@ -44,8 +101,8 @@ export const POST = async (req: NextRequest) => {
       });
     }
 
-    // 5. Handle Case B: User Exists, but No Appointments
-    if (user.appointments.length === 0) {
+    // User exists but no appointments
+    if (user.patientAppointments.length === 0) {
       return Response.json({
         results: [
           {
@@ -56,32 +113,35 @@ export const POST = async (req: NextRequest) => {
       });
     }
 
-    // 6. Handle Case C: Appointment Found
-    const nextAppointment = user.appointments[0];
+    // Appointment found
+    const nextAppointment = user.patientAppointments[0];
 
-    // Format into natural spoken English for the AI
     const formattedDate = nextAppointment.date.toLocaleDateString('en-US', {
       weekday: 'long',
       month: 'long',
       day: 'numeric',
     });
+
     const formattedTime = nextAppointment.date.toLocaleTimeString('en-US', {
       hour: 'numeric',
       minute: '2-digit',
       hour12: true,
     });
 
+    // include clinic and doctor name in spoken response
+    const clinicName = nextAppointment.clinic?.name ?? 'the clinic';
+    const doctorName = nextAppointment.doctor?.name ?? 'your doctor';
+
     return Response.json({
       results: [
         {
           toolCallId,
-          // Feed the AI the exact confirmation text
-          result: `Tell the user exactly this: "I found your record, ${user.name}. You have an appointment coming up on ${formattedDate} at ${formattedTime}."`,
+          result: `Tell the user exactly this: "I found your record, ${user.name}. You have an appointment with ${doctorName} at ${clinicName} on ${formattedDate} at ${formattedTime}."`,
         },
       ],
     });
   } catch (error) {
-    console.error('Status Check Error:', error);
+    console.error('Status check error:', error);
     return Response.json({
       results: [
         {
