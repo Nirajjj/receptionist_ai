@@ -1,11 +1,12 @@
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
-const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL,
+
+export const apiClient = axios.create({
+  baseURL: process.env.NEXT_PUBLIC_apiClient_URL,
   withCredentials: true,
 });
 // ✅ 2. Request interceptor
-api.interceptors.request.use(
+apiClient.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token');
 
@@ -19,7 +20,7 @@ api.interceptors.request.use(
 );
 
 // ✅ 3. Response interceptor
-api.interceptors.response.use(
+apiClient.interceptors.response.use(
   (response) => response,
 
   (error) => {
