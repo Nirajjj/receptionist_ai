@@ -147,7 +147,6 @@ export const POST = async (req: NextRequest) => {
       clinicId,
       patientId: user.id,
       doctorId: doctorId,
-      handledById: doctorId,
       notes: reason,
     },
   });

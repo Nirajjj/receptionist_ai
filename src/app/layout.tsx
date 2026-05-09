@@ -31,6 +31,7 @@ export default function RootLayout({
           href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
         />
       </head>
+
       <Providers>
         <body className="flex min-h-full flex-col">{children}</body>
       </Providers>

@@ -2,7 +2,7 @@ import axios from 'axios';
 import { toast } from 'react-hot-toast';
 
 export const apiClient = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_apiClient_URL,
+  baseURL: `${process.env.NEXT_PUBLIC_API_URL}/api`,
   withCredentials: true,
 });
 // ✅ 2. Request interceptor

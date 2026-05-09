@@ -87,8 +87,8 @@ model Appointment {
   patientId String @map("patient_id")
   patient   User   @relation("PatientAppointments", fields: [patientId], references: [id])
 
-  handledById String @map("handled_by_id")
-  handledBy   User   @relation("AdminAppointments", fields: [handledById], references: [id])
+  handledById String? @map("handled_by_id")
+  handledBy   User?   @relation("AdminAppointments", fields: [handledById], references: [id])
 
   clinicId String @map("clinic_id")
   clinic   Clinic @relation(fields: [clinicId], references: [id])

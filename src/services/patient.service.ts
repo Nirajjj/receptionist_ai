@@ -1,19 +1,28 @@
+// services/patient.service.ts
 import { apiClient } from '@/lib/api/axios';
+import {
+  GetClientsParams,
+  PatientsResponse,
+  PatientsResponseSchema,
+} from '@/lib/validators/schemas/patient.schema';
 
-// Move your types here so they can be shared
-export type PatientStatus = 'Active' | 'Inactive';
+export const getClients = async (
+  params: Partial<GetClientsParams> = {},
+): Promise<PatientsResponse> => {
+  const { page = 1, limit = 10, search = '' } = params;
 
-export interface Patient {
-  id: string;
-  name: string;
-  phone: string;
-  lastVisit: string;
-  nextAppointment: string;
-  status: PatientStatus;
-}
+  const response = await apiClient.get('/clients', {
+    params: { page, limit, search },
+  });
 
-export const getPatients = async (): Promise<Patient[]> => {
-  // Assuming your Next.js API route is /api/patients
-  const response = await apiClient.get<Patient[]>('/patients');
-  return response.data;
+  // Validate response shape with Zod
+  // This catches schema mismatches at runtime
+  const parsed = PatientsResponseSchema.safeParse(response.data);
+
+  if (!parsed.success) {
+    console.error('Invalid API response:', parsed.error.flatten());
+    throw new Error('Server returned unexpected data format');
+  }
+
+  return parsed.data;
 };

@@ -15,7 +15,7 @@ import {
 const topNavItems = [
   { name: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
   { name: 'Clients', href: '/admin/clients', icon: Users },
-  { name: 'Availability', href: '/admin/schedule', icon: CalendarDays },
+  { name: 'Availability', href: '/admin/availability', icon: CalendarDays },
   { name: 'Call Logs', href: '/admin/logs', icon: PhoneCall },
 ];
 
